@@ -33,3 +33,17 @@ EG:
     botbot.run
 
 You can also just `include SlackBot` in any class to make it a slackbot.
+
+## Install
+
+Just run
+
+    gem install realtime-slackbot
+
+Or add to your Gemfile
+
+    gem 'realtime-slackbot'
+
+and run `bundle install`
+
+You'll need to [create a bot user](https://api.slack.com/bot-users) for your slack team. Use the key on it's config page when you initialize the bot. Invite it to the slack channels you want it to hang out in.
