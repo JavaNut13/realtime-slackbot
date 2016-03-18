@@ -1,4 +1,2 @@
 require_relative 'slack/slack'
-
-module SlackBot
-end
+require_relative 'slack/bot'
