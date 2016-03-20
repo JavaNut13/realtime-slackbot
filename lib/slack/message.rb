@@ -22,6 +22,10 @@ module SlackBot
     def [](key)
       @data[key]
     end
+    
+    def []=(key, val)
+      @data[key] = val
+    end
   
     def method_missing(name, *args)
       if Matcher.instance_methods.include? name.to_sym
