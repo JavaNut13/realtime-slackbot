@@ -18,6 +18,10 @@ module SlackBot
     def to_s
       "#{@user.name}: #{@data['text']}"
     end
+    
+    def user
+      @bot.user(@data['user'])
+    end
   
     def [](key)
       @data[key]
@@ -29,7 +33,7 @@ module SlackBot
   
     def method_missing(name, *args)
       # Access data if no args and is valid key, else throw exception
-      if args.count == 0 && @data.has_key?(name)
+      if args.count == 0 && @data.has_key?(name.to_s)
         @data[name.to_s]
       else
         super(name, args)

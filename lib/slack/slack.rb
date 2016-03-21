@@ -63,7 +63,7 @@ module SlackBot
     if self.respond_to? "#{action}_matcher"
       unless @matchers.has_key? action
         matcher_group = MatcherGroup.new(action)
-        self.send("register_#{action}_matcher", matcher_group)
+        self.send("#{action}_matcher", matcher_group)
         @matchers[action] = matcher_group
       end
       @matchers[action].respond_for(args.first)
@@ -111,6 +111,10 @@ module SlackBot
   def user(id)
     @users ||= load_users
     @users[id]
+  end
+  
+  def channel(name)
+    @team_info['channels'].select { |c| c['name'] == name }.first
   end
   
   def log(type, message)
