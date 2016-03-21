@@ -1,5 +1,6 @@
 require_relative 'user'
 require_relative 'message'
+require_relative 'matchers/matcher_group'
 require 'net/http'
 require 'faye/websocket'
 require 'eventmachine'
@@ -59,7 +60,7 @@ module SlackBot
   end
   
   def hook(action, *args)
-    if self.respond_to? "register_#{action}_matcher"
+    if self.respond_to? "#{action}_matcher"
       unless @matchers.has_key? action
         matcher_group = MatcherGroup.new(action)
         self.send("register_#{action}_matcher", matcher_group)
@@ -79,7 +80,7 @@ module SlackBot
   def post(channel, message)
     data = {
       id: 1,
-      type: "message",
+      type: 'message',
       channel: channel,
       text: message
     }

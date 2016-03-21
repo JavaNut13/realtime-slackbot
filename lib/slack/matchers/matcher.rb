@@ -53,6 +53,11 @@ class SlackBot::Matcher
     self
   end
   
+  def try?(&block)
+    @tests << block
+    self
+  end
+  
   def then(&block)
     @finally = block
   end

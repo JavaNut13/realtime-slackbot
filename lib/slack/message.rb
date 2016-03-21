@@ -1,5 +1,5 @@
 require 'json'
-require_relative 'matcher'
+require_relative 'matchers/matcher'
 
 module SlackBot
   class Message
@@ -29,10 +29,10 @@ module SlackBot
   
     def method_missing(name, *args)
       # Access data if no args and is valid key, else throw exception
-      if args.count == 0 && @data.has_key? name
+      if args.count == 0 && @data.has_key?(name)
         @data[name.to_s]
       else
-        super
+        super(name, args)
       end
     end
   end

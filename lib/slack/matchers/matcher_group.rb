@@ -8,6 +8,7 @@ module SlackBot
     end
 
     def respond_for(msg)
+      @before_match.call(msg) if @before_match
       @matchers.each do |m|
         break if m.run_on(msg)
       end
@@ -17,6 +18,10 @@ module SlackBot
       m = Matcher.new
       @matchers.push m
       return m
+    end
+    
+    def before_match(&block)
+      @before_match = block
     end
     
     def to_s
