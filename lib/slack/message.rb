@@ -28,10 +28,11 @@ module SlackBot
     end
   
     def method_missing(name, *args)
-      if Matcher.instance_methods.include? name.to_sym
-        return Matcher.new(self).send(name, *args)
-      else
+      # Access data if no args and is valid key, else throw exception
+      if args.count == 0 && @data.has_key? name
         @data[name.to_s]
+      else
+        super
       end
     end
   end

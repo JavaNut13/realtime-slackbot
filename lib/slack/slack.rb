@@ -14,6 +14,7 @@ module SlackBot
   def initialize(auth_key, options={})
     @debug = options[:log]
     @key = auth_key.strip
+    @matchers = Hash.new
   end
   
   def get_url
@@ -25,7 +26,7 @@ module SlackBot
   
   def run
     url = get_url()
-    EM.run {
+    EM.run do
       @socket = ws = Faye::WebSocket::Client.new(url)
 
       ws.on :open do |event|
@@ -54,11 +55,18 @@ module SlackBot
         @socket = ws = nil
         hook(:closed)
       end
-    }
+    end
   end
   
   def hook(action, *args)
-    if self.respond_to? action
+    if self.respond_to? "register_#{action}_matcher"
+      unless @matchers.has_key? action
+        matcher_group = MatcherGroup.new(action)
+        self.send("register_#{action}_matcher", matcher_group)
+        @matchers[action] = matcher_group
+      end
+      @matchers[action].respond_for(args.first)
+    elsif self.respond_to? action
       begin
         send(action, *args)
       rescue Exception => e
