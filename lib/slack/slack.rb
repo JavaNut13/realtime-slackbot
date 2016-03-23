@@ -66,7 +66,12 @@ module SlackBot
         self.send("#{action}_matcher", matcher_group)
         @matchers[action] = matcher_group
       end
-      @matchers[action].respond_for(args.first)
+      begin
+        @matchers[action].respond_for(args.first)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.join "\n"
+      end
     elsif self.respond_to? action
       begin
         send(action, *args)
