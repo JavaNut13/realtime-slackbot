@@ -56,29 +56,7 @@ module SlackBot
         log(:close, "#{event.code} #{event.reason}")
         @socket = ws = nil
         hook(:closed)
-      end
-    end
-  end
-  
-  def hook(action, *args)
-    if self.respond_to? "#{action}_matcher"
-      unless @matchers.has_key? action
-        matcher_group = MatcherGroup.new(action)
-        self.send("#{action}_matcher", matcher_group)
-        @matchers[action] = matcher_group
-      end
-      begin
-        @matchers[action].respond_for(args.first)
-      rescue Exception => e
-        puts e.message
-        puts e.backtrace.join "\n"
-      end
-    elsif self.respond_to? action
-      begin
-        send(action, *args)
-      rescue Exception => e
-        puts e.message
-        puts e.backtrace.join "\n"
+        EM.stop
       end
     end
   end
@@ -103,15 +81,7 @@ module SlackBot
   def reply_to(msg, text)
     post(msg['channel'], text)
   end
-  
-  def load_channels
-    channels = Hash.new
-    @team_info['channels'].each do |chan|
-      channels[chan['id']] = Channel.new chan, self
-    end
-    channels
-  end
-  
+   
   def channels
     @channels ||= load_channels
   end
@@ -119,15 +89,7 @@ module SlackBot
   def channel(id)
     channels[id]
   end
-  
-  def load_user_channels
-    channels = Hash.new
-    @team_info['ims'].each do |chan|
-      channels[chan['user']] = Channel.new chan, self
-    end
-    channels
-  end
-  
+   
   def user_channels
     @user_channels ||= load_user_channels
   end
@@ -139,15 +101,6 @@ module SlackBot
       id = user
     end
     user_channels[id]
-  end
-      
-  
-  def load_users
-    users = Hash.new
-    (@team_info['users'] + @team_info['bots']).map do |info| 
-      users[info['id']] = User.new info
-    end
-    users
   end
   
   def users
@@ -174,5 +127,53 @@ module SlackBot
   
   def debug?
     @debug
+  end
+
+  private
+  def hook(action, *args)
+    if self.respond_to? "#{action}_matcher"
+      unless @matchers.has_key? action
+        matcher_group = MatcherGroup.new(action)
+        self.send("#{action}_matcher", matcher_group)
+        @matchers[action] = matcher_group
+      end
+      begin
+        @matchers[action].respond_for(args.first)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.join "\n"
+      end
+    elsif self.respond_to? action
+      begin
+        send(action, *args)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.join "\n"
+      end
+    end
+  end
+
+  def load_channels
+    channels = Hash.new
+    @team_info['channels'].each do |chan|
+      channels[chan['id']] = Channel.new chan, self
+    end
+    channels
+  end
+ 
+  def load_user_channels
+    channels = Hash.new
+    @team_info['ims'].each do |chan|
+      channels[chan['user']] = Channel.new chan, self
+    end
+    channels
+  end
+
+  def load_users
+    users = Hash.new
+    (@team_info['users'] + @team_info['bots']).map do |info| 
+      users[info['id']] = User.new info
+    end
+    users
   end
 end
