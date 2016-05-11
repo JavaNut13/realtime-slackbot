@@ -101,7 +101,7 @@ module SlackBot
   end
   
   def reply_to(msg, text)
-    post(data['channel'], text)
+    post(msg['channel'], text)
   end
   
   def load_channels
@@ -114,12 +114,10 @@ module SlackBot
   
   def channels
     @channels ||= load_channels
-    @channels.values
   end
   
   def channel(id)
-    @channels ||= load_channels
-    @channels[id]
+    channels[id]
   end
   
   def load_user_channels
@@ -132,7 +130,6 @@ module SlackBot
   
   def user_channels
     @user_channels ||= load_user_channels
-    @user_channels.values
   end
   
   def user_channel(user)
@@ -141,8 +138,7 @@ module SlackBot
     else
       id = user
     end
-    @user_channels ||= load_user_channels
-    @user_channels[id]
+    user_channels[id]
   end
       
   
@@ -156,12 +152,10 @@ module SlackBot
   
   def users
     @users ||= load_users
-    @users.values
   end
   
   def user(id)
-    @users ||= load_users
-    @users[id]
+    users[id]
   end
   
   def log(type, message)
