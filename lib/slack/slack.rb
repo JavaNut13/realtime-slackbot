@@ -1,5 +1,6 @@
 require_relative 'user'
 require_relative 'message'
+require_relative 'channel'
 require_relative 'matchers/matcher_group'
 require 'net/http'
 require 'faye/websocket'
@@ -83,21 +84,42 @@ module SlackBot
   end
   
   def post(channel, message)
+    if channel.is_a? String
+      chan = channel
+    elsif channel.is_a? Channel
+      chan = channel.id
+    else
+      raise "Not a valid channel: #{channel}"
+    end
     data = {
       id: 1,
       type: 'message',
-      channel: channel,
+      channel: chan,
       text: message
     }
     @socket.send data.to_json
   end
   
-  def reply_to(data, message)
-    post(data['channel'], message)
+  def reply_to(msg, text)
+    post(data['channel'], text)
+  end
+  
+  def load_channels
+    channels = Hash.new
+    @team_info['channels'].each do |chan|
+      channels[chan['id']] = Channel.new chan, self
+    end
+    channels
+  end
+  
+  def channels
+    @channels ||= load_channels
+    @channels.values
   end
   
   def channel(id)
-    @team_info['channels'].select { |ch| ch['id'] == id }.first rescue nil
+    @channels ||= load_channels
+    @channels[id]
   end
   
   def load_users
@@ -116,10 +138,6 @@ module SlackBot
   def user(id)
     @users ||= load_users
     @users[id]
-  end
-  
-  def channel(name)
-    @team_info['channels'].select { |c| c['name'] == name }.first
   end
   
   def log(type, message)

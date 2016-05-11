@@ -1,26 +1,5 @@
 module SlackBot
-  DEFAULT_ATTRS = [
-    :id,
-    :team_id,
-    :name,
-    :deleted,
-    :status,
-    :color,
-    :real_name,
-    :tz,
-    :tz_label,
-    :tz_offset,
-    :profile,
-    :is_admin,
-    :is_owner,
-    :is_primary_owner,
-    :is_restricted,
-    :is_ultra_restricted,
-    :is_bot,
-    :presence
-  ]
   class User
-    
     def initialize(data)
       @data = data
     end
@@ -37,14 +16,19 @@ module SlackBot
       (real_name && real_name.split(' ').first) || name
     end
     
-    def method_missing(sym)
-      if @data.has_key? sym.to_s
-        return @data[sym.to_s]
-      elsif DEFAULT_ATTRS.include? sym.to_sym
-        return nil
-      else
-        super
-      end
+    def [](key)
+      @data[key]
     end
+    
+    # Helper methods for getting info
+    def id; @data['id'] end
+    def name; @data['name'] end
+    def deleted; @data['deleted'] end
+    def real_name; @data['real_name'] end
+    def admin?; @data['admin'] end
+    def owner?; @data['owner'] end
+    def primary_owner?; @data['primary_owner'] end
+    def bot?; @data['is_bot'] end
+    def presence; @data['presence'] end
   end
 end

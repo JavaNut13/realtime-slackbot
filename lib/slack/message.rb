@@ -1,10 +1,9 @@
 require 'json'
-require_relative 'matchers/matcher'
 
 module SlackBot
   class Message
-    attr_accessor :user
-  
+    attr_reader :user
+    
     def initialize(data, bot)
       @data = data
       @bot = bot
@@ -16,11 +15,7 @@ module SlackBot
     end
   
     def to_s
-      "#{@user.name}: #{@data['text']}"
-    end
-    
-    def user
-      @bot.user(@data['user'])
+      "#{@user.name}: #{self.text}"
     end
   
     def [](key)
@@ -30,14 +25,17 @@ module SlackBot
     def []=(key, val)
       @data[key] = val
     end
-  
-    def method_missing(name, *args)
-      # Access data if no args and is valid key, else throw exception
-      if args.count == 0 && @data.has_key?(name.to_s)
-        @data[name.to_s]
-      else
-        super(name, args)
-      end
+    
+    # Helpers!
+    def id; @data['id'] end
+    def text; @data['text'] end
+    def time
+      ts = @data['ts']
+      ts && Time.at(ts.to_i)
+    end
+    def channel
+      chan = @data['channel']
+      @bot.channel chan
     end
   end
 end
