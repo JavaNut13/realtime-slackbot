@@ -122,6 +122,30 @@ module SlackBot
     @channels[id]
   end
   
+  def load_user_channels
+    channels = Hash.new
+    @team_info['ims'].each do |chan|
+      channels[chan['user']] = Channel.new chan, self
+    end
+    channels
+  end
+  
+  def user_channels
+    @user_channels ||= load_user_channels
+    @user_channels.values
+  end
+  
+  def user_channel(user)
+    if user.is_a? User
+      id = user.id
+    else
+      id = user
+    end
+    @user_channels ||= load_user_channels
+    @user_channels[id]
+  end
+      
+  
   def load_users
     users = Hash.new
     (@team_info['users'] + @team_info['bots']).map do |info| 

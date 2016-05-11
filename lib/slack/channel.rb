@@ -15,11 +15,15 @@ module SlackBot
     end
     def id; @data['id'] end
     def name; @data['name'] end
+    def user; @bot.user @data['user'] end
     def channel?; @data['is_channel'] end
+    def user_channel?; @data['is_im'] end
     def archived?; @data['is_archived'] end
     def members
-      @data['members'].map do |id|
-        @bot.user id
+      if user_channel?
+        return [self.user]
+      else
+        return @data['members'].map { |id| @bot.user id }
       end
     end
     def purpose
@@ -32,7 +36,11 @@ module SlackBot
     end
     
     def to_s
-      "##{name}"
+      if user_channel?
+        user.to_s
+      else
+        "##{name}"
+      end
     end
   end
 end
