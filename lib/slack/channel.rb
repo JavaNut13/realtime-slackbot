@@ -30,5 +30,9 @@ module SlackBot
       p = @data['topic']
       p && p['value']
     end
+    
+    def to_s
+      "##{name}"
+    end
   end
 end

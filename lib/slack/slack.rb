@@ -95,7 +95,7 @@ module SlackBot
       id: 1,
       type: 'message',
       channel: chan,
-      text: message
+      text: message.to_s
     }
     @socket.send data.to_json
   end
