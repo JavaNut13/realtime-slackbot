@@ -34,6 +34,9 @@ module SlackBot
       p = @data['topic']
       p && p['value']
     end
+    def session
+      @bot.session.for_channel(self.id)
+    end
     
     def to_s
       if user_channel?

@@ -1,6 +1,7 @@
 require_relative 'user'
 require_relative 'message'
 require_relative 'channel'
+require_relative 'session'
 require_relative 'matchers/matcher_group'
 require 'net/http'
 require 'faye/websocket'
@@ -12,11 +13,13 @@ module SlackBot
   attr_accessor :socket
   attr_writer :debug
   attr_reader :team_info
+  attr_reader :session
   
   def initialize(auth_key, options={})
     @debug = options[:log]
     @key = auth_key.strip
     @matchers = Hash.new
+    @session = Session.new
   end
   
   def get_url
@@ -172,7 +175,7 @@ module SlackBot
   def load_users
     users = Hash.new
     (@team_info['users'] + @team_info['bots']).map do |info| 
-      users[info['id']] = User.new info
+      users[info['id']] = User.new info, self
     end
     users
   end
