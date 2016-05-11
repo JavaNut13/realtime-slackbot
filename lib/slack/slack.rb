@@ -158,6 +158,14 @@ module SlackBot
     users[id]
   end
   
+  def me
+    @team_info['self']
+  end
+  
+  def [](key)
+    @team_info[key]
+  end
+  
   def log(type, message)
     if debug?
       puts "#{type}: #{message}"
