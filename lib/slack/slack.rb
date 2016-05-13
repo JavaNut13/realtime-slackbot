@@ -14,16 +14,22 @@ module SlackBot
   attr_writer :debug
   attr_reader :team_info
   attr_reader :session
+  attr_accessor :auth_url
   
   def initialize(auth_key, options={})
     @debug = options[:log]
     @key = auth_key.strip
+    setup()
+  end
+  
+  def setup
     @matchers = Hash.new
     @session = Session.new
+    @auth_url = SLACK_AUTH_URL
   end
   
   def get_url
-    data = Net::HTTP.get(URI(SLACK_AUTH_URL + @key))
+    data = Net::HTTP.get(URI(@auth_url + @key))
     json = JSON.parse(data)
     @team_info = json
     if json['ok']
