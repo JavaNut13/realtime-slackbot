@@ -1,7 +1,8 @@
 module SlackBot
   class User
-    def initialize(data)
+    def initialize(data, bot)
       @data = data
+      @bot = bot
     end
     
     def to_s
@@ -35,5 +36,8 @@ module SlackBot
     def bot?; @data['is_bot'] end
     def presence; @data['presence'] end
     def user_channel; @bot.user_channel self end
+    def session
+      @bot.session.for_user(self.id)
+    end
   end
 end
