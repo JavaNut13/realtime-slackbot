@@ -55,6 +55,39 @@ On success, either:
 + `then do ...`
 + `then_reply message_text`
 
+## Sessions
+
+Sessions can be used to store information about a session, user or channel so that your bot can pretend to be smarter by remembering everything. The global session can be accessed in your slackbot, and user or channel specific sessions can be got from the user or channel objects. For example:
+
+```ruby
+# Assuming we're in a message method
+msg.user.session[:last_message] = Time.now
+
+msg.channel.session[:best_user] = msg.user
+
+session[:general_preference_value] = 45
+```
+
+### Redis Sessions
+
+The sessions can also be persisted with Redis (or any other method if you want to write a wrapper). To use Redis, specify the session option when creating a bot:
+
+```ruby
+botbot = Bot.new(key, log: true, session: {
+  use: SlackBot::Ext::RedisSession, # This class will be used when making session objects.
+  store: Redis.new # This will be passed to the RedisSession instance, used to store things
+})
+botbot.run
+```
+
+This will store the values as strings (using the `.set(value)` method of Redis). If you want to access specific Redis features, use the `.core` method to get access to the Redis connection object.
+
+Everything stored in the RedisSession is automatically namespaced with a prefix, unique to the team, channel or use. For example setting a value for key `blibble` on a user will have a prefix like `team:123j12:user:4jj46b6:blibble`. You can use the `prefix` attribute on RedisSession to get the prefix if you need it for access to other methods.
+
+#### Custom Sessions
+
+To create your own session persistence or storage, you should create an object that includes methods `for_channel` and `for_user` with an `initialize(team_id, args={})`
+
 ## Install
 
 Just run

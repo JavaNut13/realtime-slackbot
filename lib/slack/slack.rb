@@ -3,6 +3,7 @@ require_relative 'wrappers/message'
 require_relative 'wrappers/channel'
 require_relative 'session'
 require_relative 'matchers/matcher_group'
+require_relative 'helpers'
 require 'net/http'
 require 'faye/websocket'
 require 'eventmachine'
@@ -17,14 +18,20 @@ module SlackBot
   attr_accessor :auth_url
   
   def initialize(auth_key, options={})
-    @debug = options[:log]
+    setup(options)
     @key = auth_key.strip
-    setup()
   end
   
-  def setup
+  def setup(options={})
+    @debug = options[:log]
     @matchers = Hash.new
-    @session = Session.new
+    if options[:session]
+      @session_type = options[:session].delete(:use)
+      @session_args = options[:session]
+    else
+      @session_type = Session
+      @session_args = {}
+    end
     @auth_url = SLACK_AUTH_URL
   end
   
@@ -46,6 +53,7 @@ module SlackBot
 
       ws.on :open do |event|
         log(:open, event.to_s)
+        create_session(team_info['team']['id'])
         hook(:opened)
       end
 
@@ -94,43 +102,6 @@ module SlackBot
   def reply_to(msg, text)
     post(msg['channel'], text)
   end
-   
-  def channels
-    @channels ||= load_channels
-  end
-  
-  def channel(id)
-    channels[id]
-  end
-   
-  def user_channels
-    @user_channels ||= load_user_channels
-  end
-  
-  def user_channel(user)
-    if user.is_a? User
-      id = user.id
-    else
-      id = user
-    end
-    user_channels[id]
-  end
-  
-  def users
-    @users ||= load_users
-  end
-  
-  def user(id)
-    users[id]
-  end
-  
-  def me
-    @team_info['self']
-  end
-  
-  def [](key)
-    @team_info[key]
-  end
   
   def log(type, message)
     if debug?
@@ -165,28 +136,8 @@ module SlackBot
       end
     end
   end
-
-  def load_channels
-    channels = Hash.new
-    @team_info['channels'].each do |chan|
-      channels[chan['id']] = Channel.new chan, self
-    end
-    channels
-  end
- 
-  def load_user_channels
-    channels = Hash.new
-    @team_info['ims'].each do |chan|
-      channels[chan['user']] = Channel.new chan, self
-    end
-    channels
-  end
-
-  def load_users
-    users = Hash.new
-    (@team_info['users'] + @team_info['bots']).map do |info| 
-      users[info['id']] = User.new info, self
-    end
-    users
+  
+  def create_session(team_id)
+    @session = @session_type.new(team_id, @session_args)
   end
 end

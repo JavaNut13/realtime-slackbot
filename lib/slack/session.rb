@@ -1,6 +1,6 @@
 module SlackBot
   class Session
-    def initialize
+    def initialize(team_id, args={})
       @user_scoped = Hash.new
       @channel_scoped = Hash.new
       @general = Hash.new

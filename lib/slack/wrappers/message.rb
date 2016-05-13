@@ -35,7 +35,7 @@ module SlackBot
     end
     def channel
       chan = @data['channel']
-      @bot.channel chan
+      @bot.channel(chan) || @bot.user_channel(chan)
     end
   end
 end
