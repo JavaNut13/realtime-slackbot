@@ -23,7 +23,11 @@ module SlackBot
     data = Net::HTTP.get(URI(SLACK_AUTH_URL + @key))
     json = JSON.parse(data)
     @team_info = json
-    json['url']
+    if json['ok']
+      return json['url']
+    else
+      raise "ERROR: #{json.to_s}"
+    end
   end
   
   def run
