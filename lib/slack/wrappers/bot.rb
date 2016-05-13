@@ -1,4 +1,4 @@
-require_relative 'slack'
+require_relative '../slack'
 
 module SlackBot
   class Bot
