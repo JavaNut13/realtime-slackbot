@@ -15,7 +15,7 @@ module SlackBot
     end
   
     def to_s
-      "#{@user.name}: #{self.text}"
+      "#{@user}: #{self.text}"
     end
   
     def [](key)
