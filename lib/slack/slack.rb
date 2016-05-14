@@ -63,7 +63,10 @@ module SlackBot
           json = JSON.parse(event.data)
           type = json.delete('type')
           if type
-            hook(type, Message.new(json, self))
+            message = Message.new(json, self)
+            unless type == "message" && message.user == me
+              hook(type, message)
+            end
           else
             hook(:unknown, json)
           end

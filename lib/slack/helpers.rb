@@ -29,7 +29,7 @@ module SlackBot
   end
   
   def me
-    @team_info['self']
+    @me ||= user(@team_info['self']['id'])
   end
   
   def [](key)
