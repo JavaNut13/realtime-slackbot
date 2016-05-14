@@ -45,5 +45,9 @@ module SlackBot
         "##{name}"
       end
     end
+
+    def post(message)
+      @bot.post self, message
+    end
   end
 end

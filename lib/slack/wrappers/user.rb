@@ -34,6 +34,7 @@ module SlackBot
     def owner?; @data['owner'] end
     def primary_owner?; @data['primary_owner'] end
     def bot?; @data['is_bot'] end
+    def human?; !bot? end
     def presence; @data['presence'] end
     def user_channel; @bot.user_channel self end
     def session

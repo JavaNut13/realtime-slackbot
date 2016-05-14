@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'realtime-slackbot'
-  s.version     = '1.1.1'
+  s.version     = '1.1.2'
   s.date        = '2016-03-24'
   s.summary     = "Slackbot realtime API"
   s.description = "Library for making realtime bots and responding to messages"
