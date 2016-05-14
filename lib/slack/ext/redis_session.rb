@@ -1,3 +1,5 @@
+require 'json'
+
 module SlackBot::Ext
   class RedisSession
     attr_reader :prefix
@@ -10,11 +12,12 @@ module SlackBot::Ext
     end
 
     def [](key)
-      @store["#{@prefix}#{key}"]
+      val = @store["#{@prefix}#{key}"]
+      JSON.parse(val, quirks_mode: true) if val
     end
 
     def []=(key, val)
-      @store["#{@prefix}#{key}"] = val
+      @store["#{@prefix}#{key}"] = val.to_json
     end
 
     def for_user(id)
