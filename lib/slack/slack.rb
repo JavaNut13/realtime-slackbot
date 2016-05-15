@@ -10,6 +10,8 @@ require 'eventmachine'
 require 'json'
 
 module SlackBot
+  include SlackBot::Helpers
+  
   SLACK_AUTH_URL = 'https://slack.com/api/rtm.start?token='
   attr_accessor :socket
   attr_writer :debug
